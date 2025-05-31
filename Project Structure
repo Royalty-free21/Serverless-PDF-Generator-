@@ -1,0 +1,9 @@
+pdf-generator/
+│
+├── templates/
+│   └── invoice.html
+├── index.js
+├── package.json
+└── utils/
+    ├── s3.js
+    └── template.js
