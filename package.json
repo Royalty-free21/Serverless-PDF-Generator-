@@ -1,0 +1,10 @@
+{
+  "name": "pdf-generator",
+  "version": "1.0.0",
+  "dependencies": {
+    "aws-sdk": "^2.1487.0",
+    "handlebars": "^4.7.7",
+    "puppeteer-core": "^21.3.8",
+    "chrome-aws-lambda": "^10.1.0"
+  }
+}
