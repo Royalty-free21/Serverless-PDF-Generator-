@@ -1,0 +1,55 @@
+const AWS = require('aws-sdk');
+const chromium = require('chrome-aws-lambda');
+const { renderTemplate } = require('./utils/template');
+const { uploadToS3 } = require('./utils/s3');
+
+exports.handler = async (event) => {
+  try {
+    // Step 1: Get mock DB data
+    const data = {
+      customerName: "John Doe",
+      orderId: "123456",
+      items: [
+        { name: "Widget A", qty: 2, price: 9.99 },
+        { name: "Widget B", qty: 1, price: 19.99 }
+      ],
+      total: 39.97
+    };
+
+    // Step 2: Render HTML
+    const html = await renderTemplate('invoice.html', data);
+
+    // Step 3: Launch headless browser
+    const browser = await chromium.puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless
+    });
+
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+    const pdfBuffer = await page.pdf({ format: 'A4' });
+
+    await browser.close();
+
+    // Step 4: Upload to S3
+    const fileName = `invoices/invoice-${Date.now()}.pdf`;
+    const bucketName = process.env.BUCKET_NAME;
+
+    const fileUrl = await uploadToS3(bucketName, fileName, pdfBuffer);
+
+    // Step 5: Return file URL
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ url: fileUrl })
+    };
+
+  } catch (err) {
+    console.error(err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Internal Server Error' })
+    };
+  }
+};
