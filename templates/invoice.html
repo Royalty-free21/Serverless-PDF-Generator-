@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Invoice</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    td, th { border: 1px solid #ccc; padding: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Invoice #{{orderId}}</h1>
+  <p>Customer: {{customerName}}</p>
+  <table>
+    <thead>
+      <tr><th>Item</th><th>Qty</th><th>Price</th></tr>
+    </thead>
+    <tbody>
+      {{#each items}}
+        <tr>
+          <td>{{name}}</td>
+          <td>{{qty}}</td>
+          <td>${{price}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  <h3>Total: ${{total}}</h3>
+</body>
+</html>
